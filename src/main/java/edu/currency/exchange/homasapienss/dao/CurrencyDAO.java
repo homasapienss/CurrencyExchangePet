@@ -10,21 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CurrencyDAO implements BaseDAO<Currency>{
+public class CurrencyDAO implements BaseDAO<Currency> {
 
-    private static PreparedStatement StateCurrencyGetAll = ConnectionManager.prepareStatement(
+    private PreparedStatement StateCurrencyGetAll = ConnectionManager.prepareStatement(
             "SELECT * FROM Currencies"
     );
-    private static PreparedStatement StateCurrencyGetById = ConnectionManager.prepareStatement(
+    private PreparedStatement StateCurrencyGetById = ConnectionManager.prepareStatement(
             "SELECT * FROM Currencies WHERE id=?"
     );
-    private static PreparedStatement StateCurrencyCreate = ConnectionManager.prepareStatement(
+    private PreparedStatement StateCurrencyCreate = ConnectionManager.prepareStatement(
             "INSERT INTO Currencies (Code, FullName, Sign) VALUES (?,?,?)"
     );
-    private static PreparedStatement StateCurrencyUpdate = ConnectionManager.prepareStatement(
+    private PreparedStatement StateCurrencyUpdate = ConnectionManager.prepareStatement(
             "UPDATE Currencies SET Code=?, FullName=?, Sign=? WHERE id=?"
     );
-    private static PreparedStatement StateCurrencyDelete = ConnectionManager.prepareStatement(
+    private PreparedStatement StateCurrencyDelete = ConnectionManager.prepareStatement(
             "DELETE FROM Currencies WHERE id=?"
     );
 
@@ -35,19 +35,31 @@ public class CurrencyDAO implements BaseDAO<Currency>{
     @Override public List<Currency> getAll() {
         List<Currency> listOfCurrencies = new ArrayList<>();
         try {
-            ResultSet resultSet= StateCurrencyGetAll.executeQuery();
+            ResultSet resultSet = StateCurrencyGetAll.executeQuery();
             while (resultSet.next()) {
-                listOfCurrencies.add(new Currency(
-                        resultSet.getInt("Id"),
-                        resultSet.getString("Code"),
-                        resultSet.getString("FullName"),
-                        resultSet.getString("Sign")
-                ));
+                listOfCurrencies.add(extractCurrency(resultSet));
             }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return listOfCurrencies;
+
+    }
+
+    private static Currency extractCurrency(ResultSet resultSet) {
+        Currency currency;
+        try {
+            currency = new Currency(
+                    resultSet.getInt("Id"),
+                    resultSet.getString("Code"),
+                    resultSet.getString("FullName"),
+                    resultSet.getString("Sign")
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return currency;
     }
 
     @Override public Currency create(Currency entity) {
