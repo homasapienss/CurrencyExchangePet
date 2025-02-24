@@ -28,9 +28,9 @@ public final class ConnectionManager {
 
     }
 
-    public static Connection getConnection() {
-        return CONNECTION;
-    }
+//    public static Connection getConnection() {
+//        return CONNECTION;
+//    }
 
     public static PreparedStatement prepareStatement(String query){
         try {
