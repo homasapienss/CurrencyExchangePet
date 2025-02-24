@@ -34,7 +34,7 @@ public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
     }
 
     @Override public List<ExchangeRate> getAll() {
-        List<ExchangeRate> listOfRates = new ArrayList<>(List.of());
+        List<ExchangeRate> listOfRates = new ArrayList<>();
         try {
             ResultSet resultSet = StatementGetAll.executeQuery();
             while (resultSet.next()) {
