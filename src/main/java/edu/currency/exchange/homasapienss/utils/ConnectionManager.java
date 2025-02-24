@@ -1,4 +1,4 @@
-package utils;
+package edu.currency.exchange.homasapienss.utils;
 
 import java.sql.*;
 
@@ -9,6 +9,11 @@ public final class ConnectionManager {
     private static Connection CONNECTION;
 
     static {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         try {
             CONNECTION = DriverManager.getConnection(
                     PropertiesUtil.getProperty(URL_KEY),

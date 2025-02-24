@@ -1,4 +1,4 @@
-package entities;
+package edu.currency.exchange.homasapienss.entities;
 
 public class Currency {
     private int id;

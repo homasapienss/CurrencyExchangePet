@@ -42,7 +42,7 @@
 
   <!-- The default servlet for all web applications, that serves static     -->
   <!-- resources.  It processes all requests that are not mapped to other   -->
-  <!-- servlets with servlet mappings (defined either here or in your own   -->
+  <!-- edu.currency.exchange.homasapienss.servlets with servlet mappings (defined either here or in your own   -->
   <!-- web.xml file).  This servlet supports the following initialization   -->
   <!-- parameters (default values are in square brackets):                  -->
   <!--                                                                      -->
@@ -122,7 +122,7 @@
 
     <servlet>
         <servlet-name>default</servlet-name>
-        <servlet-class>org.apache.catalina.servlets.DefaultServlet</servlet-class>
+        <servlet-class>org.apache.catalina.edu.currency.exchange.homasapienss.servlets.DefaultServlet</servlet-class>
         <init-param>
             <param-name>debug</param-name>
             <param-value>0</param-value>
@@ -151,7 +151,7 @@
   <!--                       debugging information?  [true]                 -->
   <!--                                                                      -->
   <!--   classpath           What class path should I use while compiling   -->
-  <!--                       generated servlets?  [Created dynamically      -->
+  <!--                       generated edu.currency.exchange.homasapienss.servlets?  [Created dynamically      -->
   <!--                       based on the current web application]          -->
   <!--                                                                      -->
   <!--   compiler            Which compiler Ant should use to compile JSP   -->
@@ -419,7 +419,7 @@
 <!--
     <servlet>
         <servlet-name>cgi</servlet-name>
-        <servlet-class>org.apache.catalina.servlets.CGIServlet</servlet-class>
+        <servlet-class>org.apache.catalina.edu.currency.exchange.homasapienss.servlets.CGIServlet</servlet-class>
         <init-param>
           <param-name>cgiPathPrefix</param-name>
           <param-value>WEB-INF/cgi</param-value>
@@ -432,8 +432,8 @@
   <!-- ================ Built In Servlet Mappings ========================= -->
 
 
-  <!-- The servlet mappings for the built in servlets defined above.  Note  -->
-  <!-- that, by default, the CGI and SSI servlets are *not* mapped.  You    -->
+  <!-- The servlet mappings for the built in edu.currency.exchange.homasapienss.servlets defined above.  Note  -->
+  <!-- that, by default, the CGI and SSI edu.currency.exchange.homasapienss.servlets are *not* mapped.  You    -->
   <!-- must uncomment these mappings (or add them to your application's own -->
   <!-- web.xml deployment descriptor) to enable these services              -->
 

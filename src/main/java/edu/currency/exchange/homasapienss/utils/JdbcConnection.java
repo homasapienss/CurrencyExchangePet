@@ -1,4 +1,4 @@
-package utils;
+package edu.currency.exchange.homasapienss.utils;
 
 import java.sql.Driver;
 import java.sql.ResultSet;
