@@ -2,7 +2,6 @@ package edu.currency.exchange.homasapienss.servlets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.currency.exchange.homasapienss.dao.ExchangeRateDAO;
-import edu.currency.exchange.homasapienss.entities.Currency;
 import edu.currency.exchange.homasapienss.entities.ExchangeRate;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

@@ -38,17 +38,27 @@ public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
         try {
             ResultSet resultSet = StatementGetAll.executeQuery();
             while (resultSet.next()) {
-                listOfRates.add(new ExchangeRate(
-                        resultSet.getInt("Id"),
-                        resultSet.getInt("BaseCurrencyId"),
-                        resultSet.getInt("TargetCurrencyId"),
-                        resultSet.getBigDecimal("Rate")
-                ));
+                listOfRates.add(extractExchangeRate(resultSet));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return listOfRates;
+    }
+
+    private static ExchangeRate extractExchangeRate(ResultSet resultSet) {
+        ExchangeRate exchangeRate;
+        try {
+            exchangeRate = new ExchangeRate(
+                    resultSet.getInt("Id"),
+                    resultSet.getInt("BaseCurrencyId"),
+                    resultSet.getInt("TargetCurrencyId"),
+                    resultSet.getBigDecimal("Rate")
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return exchangeRate;
     }
 
     @Override public ExchangeRate create(ExchangeRate entity) {
