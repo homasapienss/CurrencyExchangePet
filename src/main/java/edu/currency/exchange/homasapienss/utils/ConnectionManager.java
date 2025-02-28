@@ -33,8 +33,10 @@ public final class ConnectionManager {
 //    }
 
     public static PreparedStatement prepareStatement(String query){
+        PreparedStatement ps;
         try {
-            return CONNECTION.prepareStatement(query);
+            ps = CONNECTION.prepareStatement(query);
+            return ps;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

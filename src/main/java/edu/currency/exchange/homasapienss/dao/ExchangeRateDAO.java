@@ -47,14 +47,12 @@ public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
     }
 
     private static ExchangeRate extractExchangeRate(ResultSet resultSet) {
-        ExchangeRate exchangeRate;
+        ExchangeRate exchangeRate = new ExchangeRate();
         try {
-            exchangeRate = new ExchangeRate(
-                    resultSet.getInt("Id"),
-                    resultSet.getInt("BaseCurrencyId"),
-                    resultSet.getInt("TargetCurrencyId"),
-                    resultSet.getBigDecimal("Rate")
-            );
+            exchangeRate.setId(resultSet.getInt("id"));
+            exchangeRate.setBaseCurrency(resultSet.getInt("BaseCurrencyId"));
+            exchangeRate.setTargetCurrency(resultSet.getInt("TargetCurrencyId"));
+            exchangeRate.setRate(resultSet.getBigDecimal("Rate"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -62,7 +60,15 @@ public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
     }
 
     @Override public ExchangeRate create(ExchangeRate entity) {
-        return null;
+        try {
+            StatementCreate.setInt(1, entity.getBaseCurrency());
+            StatementCreate.setInt(2, entity.getTargetCurrency());
+            StatementCreate.setBigDecimal(3, entity.getRate());
+            StatementCreate.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return entity;
     }
 
     @Override public ExchangeRate update(ExchangeRate entity) {

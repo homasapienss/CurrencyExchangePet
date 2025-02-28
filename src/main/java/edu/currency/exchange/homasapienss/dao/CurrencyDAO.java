@@ -48,14 +48,12 @@ public class CurrencyDAO implements BaseDAO<Currency> {
     }
 
     private static Currency extractCurrency(ResultSet resultSet) {
-        Currency currency;
+        Currency currency = new Currency();
         try {
-            currency = new Currency(
-                    resultSet.getInt("Id"),
-                    resultSet.getString("Code"),
-                    resultSet.getString("FullName"),
-                    resultSet.getString("Sign")
-            );
+            currency.setCode(resultSet.getString("Code"));
+            currency.setName(resultSet.getString("FullName"));
+            currency.setSign(resultSet.getString("Sign"));
+            currency.setId(resultSet.getInt("id"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -63,7 +61,16 @@ public class CurrencyDAO implements BaseDAO<Currency> {
     }
 
     @Override public Currency create(Currency entity) {
-        return null;
+        try {
+            StateCurrencyCreate.setString(1, entity.getCode());
+            StateCurrencyCreate.setString(2, entity.getName());
+            StateCurrencyCreate.setString(3, entity.getSign());
+            StateCurrencyCreate.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return entity;
     }
 
     @Override public Currency update(Currency entity) {

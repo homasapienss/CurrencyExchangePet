@@ -28,4 +28,15 @@ public class CurrenciesServlet extends HttpServlet {
         String jsonResponse = objectMapper.writeValueAsString(currencies);
         resp.getWriter().write(jsonResponse);
     }
+
+    @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        String code = req.getParameter("code");
+        String name = req.getParameter("name");
+        String sign = req.getParameter("sign");
+        Currency currency = new Currency(code, name, sign);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(new CurrencyDAO().create(currency));
+        resp.getWriter().write(jsonResponse);
+    }
 }
