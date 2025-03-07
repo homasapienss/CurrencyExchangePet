@@ -12,30 +12,59 @@ import java.util.Optional;
 
 public class CurrencyDAO implements BaseDAO<Currency> {
 
-    private PreparedStatement StateCurrencyGetAll = ConnectionManager.prepareStatement(
+    private PreparedStatement stateCurrencyGetAll = ConnectionManager.prepareStatement(
             "SELECT * FROM Currencies"
     );
-    private PreparedStatement StateCurrencyGetById = ConnectionManager.prepareStatement(
+    private PreparedStatement stateCurrencyGetByCode = ConnectionManager.prepareStatement(
+            "SELECT * FROM Currencies WHERE Code=?"
+    );
+    private PreparedStatement stateCurrencyGetById = ConnectionManager.prepareStatement(
             "SELECT * FROM Currencies WHERE id=?"
     );
-    private PreparedStatement StateCurrencyCreate = ConnectionManager.prepareStatement(
+    private PreparedStatement stateCurrencyCreate = ConnectionManager.prepareStatement(
             "INSERT INTO Currencies (Code, FullName, Sign) VALUES (?,?,?)"
     );
-    private PreparedStatement StateCurrencyUpdate = ConnectionManager.prepareStatement(
+    private PreparedStatement stateCurrencyUpdate = ConnectionManager.prepareStatement(
             "UPDATE Currencies SET Code=?, FullName=?, Sign=? WHERE id=?"
     );
-    private PreparedStatement StateCurrencyDelete = ConnectionManager.prepareStatement(
+    private PreparedStatement stateCurrencyDelete = ConnectionManager.prepareStatement(
             "DELETE FROM Currencies WHERE id=?"
     );
 
+    public static Optional<Currency> getCurrency(ResultSet resultSet)
+            throws SQLException {
+        if (!resultSet.next()){
+            return Optional.empty();
+        } else {
+            return Optional.of(extractCurrency(resultSet));
+        }
+    }
+
     @Override public Optional<Currency> getById(int id) {
-        return Optional.empty();
+        try {
+            stateCurrencyGetById.setInt(1, id);
+            return getCurrency(stateCurrencyGetById.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public Optional<Currency> getByCode(String code) {
+        try {
+            stateCurrencyGetByCode.setString(1, code);
+            ResultSet resultSet = stateCurrencyGetByCode.executeQuery();
+            return getCurrency(resultSet);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override public List<Currency> getAll() {
         List<Currency> listOfCurrencies = new ArrayList<>();
         try {
-            ResultSet resultSet = StateCurrencyGetAll.executeQuery();
+            ResultSet resultSet = stateCurrencyGetAll.executeQuery();
             while (resultSet.next()) {
                 listOfCurrencies.add(extractCurrency(resultSet));
             }
@@ -44,7 +73,6 @@ public class CurrencyDAO implements BaseDAO<Currency> {
             throw new RuntimeException(e);
         }
         return listOfCurrencies;
-
     }
 
     private static Currency extractCurrency(ResultSet resultSet) {
@@ -62,22 +90,35 @@ public class CurrencyDAO implements BaseDAO<Currency> {
 
     @Override public Currency create(Currency entity) {
         try {
-            StateCurrencyCreate.setString(1, entity.getCode());
-            StateCurrencyCreate.setString(2, entity.getName());
-            StateCurrencyCreate.setString(3, entity.getSign());
-            StateCurrencyCreate.executeUpdate();
+            stateCurrencyCreate.setString(1, entity.getCode());
+            stateCurrencyCreate.setString(2, entity.getName());
+            stateCurrencyCreate.setString(3, entity.getSign());
+            stateCurrencyCreate.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
         return entity;
     }
 
     @Override public Currency update(Currency entity) {
-        return null;
+        try {
+            stateCurrencyUpdate.setString(1, entity.getCode());
+            stateCurrencyUpdate.setString(2, entity.getName());
+            stateCurrencyUpdate.setString(3, entity.getSign());
+            stateCurrencyUpdate.setInt(4, entity.getId());
+            stateCurrencyUpdate.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return entity;
     }
 
     @Override public void delete(int id) {
-
+        try {
+            stateCurrencyDelete.setInt(1, id);
+            stateCurrencyDelete.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
