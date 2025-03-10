@@ -1,6 +1,7 @@
 package edu.currency.exchange.homasapienss.servlets;
 
 import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
+import edu.currency.exchange.homasapienss.service.CurrencyService;
 import edu.currency.exchange.homasapienss.utils.JsonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,15 +16,15 @@ import edu.currency.exchange.homasapienss.entities.Currency;
 import java.util.List;
 
 @WebServlet("/currencies")
-public class CurrenciesServlet extends HttpServlet {
+public class CurrenciesServlet extends BaseServlet {
 
-    CurrencyDAO currencyDAO = new CurrencyDAO();
+
+    CurrencyService currencyService = new CurrencyService();
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        List<Currency> currencies = currencyDAO.getAll();
-        resp.getWriter().write(JsonUtil.writeJson(currencies));
-        resp.getWriter().write(JsonUtil.writeJson(currencyDAO.getById(1)));
+        List<Currency> currencies = currencyService.getAll();
+        sendJsonResponse(resp, currencies);
 
     }
 
@@ -33,13 +34,13 @@ public class CurrenciesServlet extends HttpServlet {
         String name = req.getParameter("name");
         String sign = req.getParameter("sign");
         Currency currency = new Currency(code, name, sign);
-        resp.getWriter().write(JsonUtil.writeJson(currencyDAO.create(currency)));
+        sendJsonResponse(resp, currencyService.create(currency));
     }
 
     @Override protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
-        currencyDAO.delete(id);
+        currencyService.delete(id);
     }
 
     @Override protected void doPut(HttpServletRequest req, HttpServletResponse resp)
@@ -50,6 +51,6 @@ public class CurrenciesServlet extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         Currency currency = new Currency(code, name, sign);
         currency.setId(id);
-        resp.getWriter().write(JsonUtil.writeJson(currencyDAO.update(currency)));
+        sendJsonResponse(resp, currencyService.update(currency));
     }
 }

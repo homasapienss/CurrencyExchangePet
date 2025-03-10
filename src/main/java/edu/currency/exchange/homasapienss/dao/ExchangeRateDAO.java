@@ -11,32 +11,57 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
+    CurrencyDAO currencyDAO = new CurrencyDAO();
 
-    private static PreparedStatement StatementGetAll = ConnectionManager.prepareStatement(
+    private PreparedStatement statementGetAll = ConnectionManager.prepareStatement(
             "SELECT * FROM ExchangeRates"
     );
-    private static PreparedStatement StatementGetById = ConnectionManager.prepareStatement(
+    private PreparedStatement statementGetById = ConnectionManager.prepareStatement(
             "SELECT * FROM ExchangeRates WHERE id=?"
     );
-    private static PreparedStatement StatementCreate = ConnectionManager.prepareStatement(
+    private PreparedStatement statementGetByCodePair = ConnectionManager.prepareStatement(
+            "SELECT * FROM exchangeRates WHERE BaseCurrencyId = ? AND TargetCurrencyId = ?;"
+    );
+    private PreparedStatement statementCreate = ConnectionManager.prepareStatement(
             "INSERT INTO ExchangeRates (BaseCurrencyId, TargetCurrencyId, Rate) VALUES (?,?,?)"
     );
-    private static PreparedStatement StatementUpdate = ConnectionManager.prepareStatement(
+    private PreparedStatement statementUpdate = ConnectionManager.prepareStatement(
             "UPDATE ExchangeRates SET BaseCurrencyId=?, TargetCurrencyId=?, Rate=? WHERE id=?"
     );
-    private static PreparedStatement StatementDelete = ConnectionManager.prepareStatement(
+    private PreparedStatement statementDelete = ConnectionManager.prepareStatement(
             "DELETE FROM ExchangeRates WHERE id=?"
     );
 
-
+    public Optional<ExchangeRate> getByCodePair(String baseCurrency, String targetCurrency){
+        try {
+            statementGetByCodePair.setInt(1, currencyDAO.getByCode(baseCurrency).get().getId());
+            statementGetByCodePair.setInt(2, currencyDAO.getByCode(targetCurrency).get().getId());
+            return getExchangeRate(statementGetByCodePair.executeQuery());
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @Override public Optional<ExchangeRate> getById(int id) {
-        return Optional.empty();
+        try {
+            statementGetById.setInt(1, id);
+            return  getExchangeRate(statementGetById.executeQuery());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Optional<ExchangeRate> getExchangeRate(ResultSet resultSet) throws SQLException {
+        if (!resultSet.next()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(extractExchangeRate(resultSet));
+        }
     }
 
     @Override public List<ExchangeRate> getAll() {
         List<ExchangeRate> listOfRates = new ArrayList<>();
         try {
-            ResultSet resultSet = StatementGetAll.executeQuery();
+            ResultSet resultSet = statementGetAll.executeQuery();
             while (resultSet.next()) {
                 listOfRates.add(extractExchangeRate(resultSet));
             }
@@ -61,21 +86,34 @@ public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
 
     @Override public ExchangeRate create(ExchangeRate entity) {
         try {
-            StatementCreate.setInt(1, entity.getBaseCurrency());
-            StatementCreate.setInt(2, entity.getTargetCurrency());
-            StatementCreate.setBigDecimal(3, entity.getRate());
-            StatementCreate.executeUpdate();
+            statementCreate.setInt(1, entity.getBaseCurrency());
+            statementCreate.setInt(2, entity.getTargetCurrency());
+            statementCreate.setBigDecimal(3, entity.getRate());
+            statementCreate.executeUpdate();
+            return entity;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override public ExchangeRate update(ExchangeRate entity) {
+        try {
+            statementUpdate.setInt(1, entity.getBaseCurrency());
+            statementUpdate.setInt(2, entity.getTargetCurrency());
+            statementUpdate.setBigDecimal(3, entity.getRate());
+            statementUpdate.setInt(4, entity.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return entity;
     }
 
-    @Override public ExchangeRate update(ExchangeRate entity) {
-        return null;
+    @Override public void delete(int id) {
+        try {
+            statementDelete.setInt(1, id);
+            statementDelete.executeUpdate();
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
-
-    @Override public void delete(int id) {}
-
-
 }

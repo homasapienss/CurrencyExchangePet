@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebServlet("/currency/*")
-public class CurrencyServlet extends HttpServlet {
+public class CurrencyServlet extends BaseServlet {
     CurrencyDAO currencyDAO = new CurrencyDAO();
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
