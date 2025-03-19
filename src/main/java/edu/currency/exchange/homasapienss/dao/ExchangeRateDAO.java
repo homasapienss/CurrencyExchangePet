@@ -50,7 +50,7 @@ public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
         }
     }
 
-    public static Optional<ExchangeRate> getExchangeRate(ResultSet resultSet) throws SQLException {
+    private Optional<ExchangeRate> getExchangeRate(ResultSet resultSet) throws SQLException {
         if (!resultSet.next()) {
             return Optional.empty();
         } else {
@@ -102,6 +102,7 @@ public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
             statementUpdate.setInt(2, entity.getTargetCurrency());
             statementUpdate.setBigDecimal(3, entity.getRate());
             statementUpdate.setInt(4, entity.getId());
+            statementUpdate.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

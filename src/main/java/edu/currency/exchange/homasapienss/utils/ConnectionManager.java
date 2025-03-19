@@ -32,7 +32,7 @@ public final class ConnectionManager {
 //        return CONNECTION;
 //    }
 
-    public static PreparedStatement prepareStatement(String query){
+    public static PreparedStatement prepareStatement(String query) {
         PreparedStatement ps;
         try {
             ps = CONNECTION.prepareStatement(query);

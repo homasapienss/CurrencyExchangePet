@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebFilter;
 
 import java.io.IOException;
 
-@WebFilter({"/currencies", "/currency/*", "/exchangeRates"})
+@WebFilter({"/currencies", "/currency/*", "/exchangeRates", "/exchangeRate/*"})
 public class ServletsFilter implements Filter {
     @Override
     public void doFilter(

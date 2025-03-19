@@ -15,9 +15,10 @@ public class ExchangeRateService {
     CurrencyDAO currencyDAO = new CurrencyDAO();
 
     public ExchangeRate getByCodePair(String baseCurrency, String targetCurrency) {
-        if (currencyDAO.getByCode(baseCurrency).isEmpty() || currencyDAO.getByCode(targetCurrency).isEmpty()){
+        if (currencyDAO.getByCode(baseCurrency).isEmpty() ||
+            currencyDAO.getByCode(targetCurrency).isEmpty()) {
             throw new RuntimeException();
-        }else if (exchangeRateDAO.getByCodePair(baseCurrency, targetCurrency).isEmpty()){
+        } else if (exchangeRateDAO.getByCodePair(baseCurrency, targetCurrency).isEmpty()) {
             throw new RuntimeException();
         }
         return exchangeRateDAO.getByCodePair(baseCurrency, targetCurrency).get();
@@ -45,6 +46,7 @@ public class ExchangeRateService {
     public void delete(int id) {
         exchangeRateDAO.delete(id);
     }
+
     public ExchangeRateDTO convertToExchangeRateDTO(ExchangeRate entity) {
         ExchangeRateDTO exchangeRateDTO = new ExchangeRateDTO();
         exchangeRateDTO.setId(entity.getId());
@@ -59,12 +61,15 @@ public class ExchangeRateService {
         for (int i = 0; i < exchangeRates.size(); i++) {
             ExchangeRateDTO exchangeRateDTO = new ExchangeRateDTO();
             exchangeRateDTO.setId(exchangeRates.get(i).getId());
-            exchangeRateDTO.setBaseCurrency(currencyDAO.getById(exchangeRates.get(i).getBaseCurrency()).get());
-            exchangeRateDTO.setTargetCurrency(currencyDAO.getById(exchangeRates.get(i).getTargetCurrency()).get());
+            exchangeRateDTO.setBaseCurrency(
+                    currencyDAO.getById(exchangeRates.get(i).getBaseCurrency()).get());
+            exchangeRateDTO.setTargetCurrency(
+                    currencyDAO.getById(exchangeRates.get(i).getTargetCurrency()).get());
             exchangeRateDTO.setRate(exchangeRates.get(i).getRate());
             exchangeRateDTOS.add(exchangeRateDTO);
         }
 
         return exchangeRateDTOS;
     }
+
 }
