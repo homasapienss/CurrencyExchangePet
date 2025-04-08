@@ -1,6 +1,8 @@
 package edu.currency.exchange.homasapienss.dao;
 
 import edu.currency.exchange.homasapienss.entities.ExchangeRate;
+import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
+import edu.currency.exchange.homasapienss.exceptions.ErrorMessage;
 import edu.currency.exchange.homasapienss.utils.ConnectionManager;
 
 import java.sql.PreparedStatement;
@@ -66,7 +68,7 @@ public class ExchangeRateDAO implements BaseDAO<ExchangeRate> {
                 listOfRates.add(extractExchangeRate(resultSet));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new ApplicationException(ErrorMessage.ERROR);
         }
         return listOfRates;
     }

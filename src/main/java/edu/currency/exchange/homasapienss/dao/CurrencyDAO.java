@@ -1,6 +1,8 @@
 package edu.currency.exchange.homasapienss.dao;
 
 import edu.currency.exchange.homasapienss.entities.Currency;
+import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
+import edu.currency.exchange.homasapienss.exceptions.ErrorMessage;
 import edu.currency.exchange.homasapienss.utils.ConnectionManager;
 
 import java.sql.PreparedStatement;
@@ -31,7 +33,7 @@ public class CurrencyDAO implements BaseDAO<Currency> {
             "DELETE FROM Currencies WHERE id=?"
     );
 
-    public static Optional<Currency> getCurrency(ResultSet resultSet)
+    private Optional<Currency> getCurrency(ResultSet resultSet)
             throws SQLException {
         if (!resultSet.next()){
             return Optional.empty();
@@ -61,7 +63,7 @@ public class CurrencyDAO implements BaseDAO<Currency> {
 
     }
 
-    @Override public List<Currency> getAll() {
+    @Override public List<Currency> getAll() throws ApplicationException {
         List<Currency> listOfCurrencies = new ArrayList<>();
         try {
             ResultSet resultSet = stateCurrencyGetAll.executeQuery();
@@ -70,7 +72,7 @@ public class CurrencyDAO implements BaseDAO<Currency> {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new ApplicationException(ErrorMessage.ERROR);
         }
         return listOfCurrencies;
     }

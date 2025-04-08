@@ -7,8 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class BaseServlet extends HttpServlet {
-    protected <T> void sendJsonResponse(HttpServletResponse resp, T payload)
+    protected <T> void sendJsonResponse(HttpServletResponse resp, T payload, int status)
             throws IOException {
         resp.getWriter().write(JsonUtil.writeJson(payload));
+        resp.setStatus(status);
     }
 }

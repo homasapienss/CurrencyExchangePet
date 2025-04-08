@@ -1,8 +1,13 @@
 package edu.currency.exchange.homasapienss.servlets;
 
 import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
+import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
+import edu.currency.exchange.homasapienss.exceptions.ErrorMessage;
+import edu.currency.exchange.homasapienss.exceptions.ExceptionHandler;
+import edu.currency.exchange.homasapienss.exceptions.ExceptionMessage;
 import edu.currency.exchange.homasapienss.service.CurrencyService;
 import edu.currency.exchange.homasapienss.utils.JsonUtil;
+import edu.currency.exchange.homasapienss.utils.ValidationUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -23,9 +28,12 @@ public class CurrenciesServlet extends BaseServlet {
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        List<Currency> currencies = currencyService.getAll();
-        sendJsonResponse(resp, currencies);
-
+        try {
+            List<Currency> currencies = currencyService.getAll();
+            sendJsonResponse(resp, currencies, 200);
+        } catch (ApplicationException e) {
+            new ExceptionHandler().handleException(resp, e);
+        }
     }
 
     @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -33,24 +41,13 @@ public class CurrenciesServlet extends BaseServlet {
         String code = req.getParameter("code");
         String name = req.getParameter("name");
         String sign = req.getParameter("sign");
-        Currency currency = new Currency(code, name, sign);
-        sendJsonResponse(resp, currencyService.create(currency));
-    }
+        try {
+            ValidationUtil.validateCurrency(code, name, sign);
+            Currency currency = new Currency(code, name, sign);
+            sendJsonResponse(resp, currencyService.create(currency), 201);
+        }catch (ApplicationException e) {
+            new ExceptionHandler().handleException(resp, e);
+        }
 
-    @Override protected void doDelete(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        int id = Integer.parseInt(req.getParameter("id"));
-        currencyService.delete(id);
-    }
-
-    @Override protected void doPut(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        String code = req.getParameter("code");
-        String name = req.getParameter("name");
-        String sign = req.getParameter("sign");
-        int id = Integer.parseInt(req.getParameter("id"));
-        Currency currency = new Currency(code, name, sign);
-        currency.setId(id);
-        sendJsonResponse(resp, currencyService.update(currency));
     }
 }

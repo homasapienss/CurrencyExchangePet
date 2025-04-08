@@ -4,6 +4,8 @@ import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
 import edu.currency.exchange.homasapienss.dao.ExchangeRateDAO;
 import edu.currency.exchange.homasapienss.dto.ExchangeRateDTO;
 import edu.currency.exchange.homasapienss.entities.ExchangeRate;
+import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
+import edu.currency.exchange.homasapienss.exceptions.ErrorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +19,9 @@ public class ExchangeRateService {
     public ExchangeRate getByCodePair(String baseCurrency, String targetCurrency) {
         if (currencyDAO.getByCode(baseCurrency).isEmpty() ||
             currencyDAO.getByCode(targetCurrency).isEmpty()) {
-            throw new RuntimeException();
+            throw new ApplicationException(ErrorMessage.NO_CODE_PAIR_DB);
         } else if (exchangeRateDAO.getByCodePair(baseCurrency, targetCurrency).isEmpty()) {
-            throw new RuntimeException();
+            throw new ApplicationException(ErrorMessage.NO_CODE_PAIR_DB);
         }
         return exchangeRateDAO.getByCodePair(baseCurrency, targetCurrency).get();
     }

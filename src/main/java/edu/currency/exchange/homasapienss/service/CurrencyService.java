@@ -2,6 +2,7 @@ package edu.currency.exchange.homasapienss.service;
 
 import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
 import edu.currency.exchange.homasapienss.entities.Currency;
+import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public class CurrencyService {
         return currencyDAO.getByCode(code);
     }
 
-    public List<Currency> getAll() {
+    public List<Currency> getAll() throws ApplicationException {
         System.out.println("currency service get all");
         return currencyDAO.getAll();
     }
