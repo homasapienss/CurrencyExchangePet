@@ -1,5 +1,8 @@
 package edu.currency.exchange.homasapienss.servlets;
 
+import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
+import edu.currency.exchange.homasapienss.dao.ExchangeRateDAO;
+import edu.currency.exchange.homasapienss.dto.ExchangeRateDTO;
 import edu.currency.exchange.homasapienss.entities.ExchangeRate;
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 import edu.currency.exchange.homasapienss.exceptions.ExceptionHandler;
@@ -16,33 +19,31 @@ import java.math.BigDecimal;
 
 @WebServlet("/exchangeRates")
 public class ExchangeRatesServlet extends BaseServlet {
-    ExchangeRateService exchangeRateService = new ExchangeRateService();
+    ExchangeRateService exchangeRateService = new ExchangeRateService(new ExchangeRateDAO(),
+                                                                      new CurrencyDAO());
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            var exchangeRateDTOS =
-                    exchangeRateService.convertToListExchangeRateDTO(exchangeRateService.getAll());
-            sendJsonResponse(resp, exchangeRateDTOS, 200);
-        }catch (ApplicationException e){
+            sendJsonResponse(resp, exchangeRateService.getAll(), 200);
+        } catch (ApplicationException e) {
             new ExceptionHandler().handleException(resp, e);
         }
     }
 
     @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        CurrencyService currencyService= new CurrencyService();
         String base = req.getParameter("baseCurrencyCode");
         String target = req.getParameter("targetCurrencyCode");
         String rate = req.getParameter("rate");
         try {
-            ValidationUtil.validateExchangeRate(base,target,rate);
-            ExchangeRate exchangeRate = new ExchangeRate();
-            exchangeRate.setRate(BigDecimal.valueOf(Double.parseDouble(rate)));
-            exchangeRate.setBaseCurrency(currencyService.getByCode(base).get().getId());
-            exchangeRate.setTargetCurrency(currencyService.getByCode(target).get().getId());
-            ExchangeRate rateObj = exchangeRateService.create(exchangeRate);
-            sendJsonResponse(resp, exchangeRateService.convertToExchangeRateDTO(rateObj),200);
+            ValidationUtil.validateExchangeRate(base, target, rate);
+            ExchangeRateDTO exchangeRateDTO = new ExchangeRateDTO();
+            exchangeRateDTO.setRate(BigDecimal.valueOf(Double.parseDouble(rate)));
+            exchangeRateDTO.setBaseCurrency(exchangeRateService.getBaseCurrencyId(base));
+            exchangeRateDTO.setTargetCurrency(exchangeRateService.getTargetCurrencyId(target));
+            exchangeRateService.save(exchangeRateDTO);
+            sendJsonResponseSuccess(resp);
         } catch (ApplicationException e) {
             new ExceptionHandler().handleException(resp, e);
         }

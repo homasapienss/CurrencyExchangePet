@@ -5,8 +5,8 @@ import edu.currency.exchange.homasapienss.entities.Currency;
 import java.math.BigDecimal;
 
 public class ExchangeDTO {
-    private Currency baseCurrency;
-    private Currency targetCurrency;
+    private CurrencyDTO baseCurrency;
+    private CurrencyDTO targetCurrency;
     private BigDecimal rate;
     private BigDecimal amount;
     private BigDecimal convertedAmount;
@@ -14,19 +14,19 @@ public class ExchangeDTO {
     public ExchangeDTO() {
     }
 
-    public Currency getBaseCurrency() {
+    public CurrencyDTO getBaseCurrency() {
         return baseCurrency;
     }
 
-    public void setBaseCurrency(Currency baseCurrency) {
+    public void setBaseCurrency(CurrencyDTO baseCurrency) {
         this.baseCurrency = baseCurrency;
     }
 
-    public Currency getTargetCurrency() {
+    public CurrencyDTO getTargetCurrency() {
         return targetCurrency;
     }
 
-    public void setTargetCurrency(Currency targetCurrency) {
+    public void setTargetCurrency(CurrencyDTO targetCurrency) {
         this.targetCurrency = targetCurrency;
     }
 

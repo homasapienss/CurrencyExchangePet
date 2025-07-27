@@ -1,5 +1,6 @@
 package edu.currency.exchange.homasapienss.servlets;
 
+import edu.currency.exchange.homasapienss.exceptions.ExceptionMessage;
 import edu.currency.exchange.homasapienss.utils.JsonUtil;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,5 +12,10 @@ public class BaseServlet extends HttpServlet {
             throws IOException {
         resp.getWriter().write(JsonUtil.writeJson(payload));
         resp.setStatus(status);
+    }
+    protected <T> void sendJsonResponseSuccess(HttpServletResponse resp)
+            throws IOException {
+        resp.getWriter().write(JsonUtil.writeJson(new ExceptionMessage("Операция прошла успешно")));
+        resp.setStatus(201);
     }
 }

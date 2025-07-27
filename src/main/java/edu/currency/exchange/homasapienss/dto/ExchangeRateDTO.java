@@ -1,39 +1,29 @@
 package edu.currency.exchange.homasapienss.dto;
 
-import edu.currency.exchange.homasapienss.entities.Currency;
-
 import java.math.BigDecimal;
 
 public class ExchangeRateDTO {
-    private int id;
-    private Currency baseCurrency;
-    private Currency targetCurrency;
+    private int baseCurrency;
+    private int targetCurrency;
     private BigDecimal rate;
+
 
     public ExchangeRateDTO() {
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Currency getBaseCurrency() {
+    public int getBaseCurrency() {
         return baseCurrency;
     }
 
-    public void setBaseCurrency(Currency baseCurrency) {
+    public void setBaseCurrency(int baseCurrency) {
         this.baseCurrency = baseCurrency;
     }
 
-    public Currency getTargetCurrency() {
+    public int getTargetCurrency() {
         return targetCurrency;
     }
 
-    public void setTargetCurrency(Currency targetCurrency) {
+    public void setTargetCurrency(int targetCurrency) {
         this.targetCurrency = targetCurrency;
     }
 

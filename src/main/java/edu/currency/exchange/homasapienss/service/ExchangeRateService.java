@@ -3,75 +3,115 @@ package edu.currency.exchange.homasapienss.service;
 import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
 import edu.currency.exchange.homasapienss.dao.ExchangeRateDAO;
 import edu.currency.exchange.homasapienss.dto.ExchangeRateDTO;
+import edu.currency.exchange.homasapienss.entities.Currency;
 import edu.currency.exchange.homasapienss.entities.ExchangeRate;
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 import edu.currency.exchange.homasapienss.exceptions.ErrorMessage;
+import edu.currency.exchange.homasapienss.exceptions.exists.CodePairExistsException;
+import edu.currency.exchange.homasapienss.exceptions.notfound.CurrencyNotFoundException;
+import edu.currency.exchange.homasapienss.exceptions.notfound.ExchangeRateNotFoundException;
+import edu.currency.exchange.homasapienss.mappers.ExchangeRateMapper;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class ExchangeRateService {
 
-    ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO();
-    CurrencyDAO currencyDAO = new CurrencyDAO();
+    ExchangeRateDAO exchangeRateDAO;
+    private final ExchangeRateMapper exchangeRateMapper = new ExchangeRateMapper();
+    private final CurrencyDAO currencyDAO;
 
-    public ExchangeRate getByCodePair(String baseCurrency, String targetCurrency) {
-        if (currencyDAO.getByCode(baseCurrency).isEmpty() ||
-            currencyDAO.getByCode(targetCurrency).isEmpty()) {
-            throw new ApplicationException(ErrorMessage.NO_CODE_PAIR_DB);
-        } else if (exchangeRateDAO.getByCodePair(baseCurrency, targetCurrency).isEmpty()) {
-            throw new ApplicationException(ErrorMessage.NO_CODE_PAIR_DB);
+    public ExchangeRateService(ExchangeRateDAO exchangeRateDAO, CurrencyDAO currencyDAO) {
+        this.exchangeRateDAO = exchangeRateDAO;
+        this.currencyDAO = currencyDAO;
+    }
+
+    public int getBaseCurrencyId(String code) {
+        try {
+            Currency currency = currencyDAO.getByCode(code)
+                    .orElseThrow(CurrencyNotFoundException::new);
+            return currency.getId();
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
         }
-        return exchangeRateDAO.getByCodePair(baseCurrency, targetCurrency).get();
     }
 
-    public ExchangeRate getById(int id) {
-        if (exchangeRateDAO.getById(id).isEmpty()) {
-            throw new RuntimeException();
+    public int getTargetCurrencyId(String code) {
+        try {
+            Currency currency = currencyDAO.getByCode(code)
+                    .orElseThrow(CurrencyNotFoundException::new);
+            return currency.getId();
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
         }
-        return exchangeRateDAO.getById(id).get();
     }
 
-    public List<ExchangeRate> getAll() {
-        return exchangeRateDAO.getAll();
-    }
-
-    public ExchangeRate create(ExchangeRate entity) {
-        return exchangeRateDAO.create(entity);
-    }
-
-    public ExchangeRate update(ExchangeRate entity) {
-        return exchangeRateDAO.update(entity);
-    }
-
-    public void delete(int id) {
-        exchangeRateDAO.delete(id);
-    }
-
-    public ExchangeRateDTO convertToExchangeRateDTO(ExchangeRate entity) {
-        ExchangeRateDTO exchangeRateDTO = new ExchangeRateDTO();
-        exchangeRateDTO.setId(entity.getId());
-        exchangeRateDTO.setBaseCurrency(currencyDAO.getById(entity.getBaseCurrency()).get());
-        exchangeRateDTO.setTargetCurrency(currencyDAO.getById(entity.getTargetCurrency()).get());
-        exchangeRateDTO.setRate(entity.getRate());
-        return exchangeRateDTO;
-    }
-
-    public List<ExchangeRateDTO> convertToListExchangeRateDTO(List<ExchangeRate> exchangeRates) {
-        List<ExchangeRateDTO> exchangeRateDTOS = new ArrayList<>();
-        for (int i = 0; i < exchangeRates.size(); i++) {
-            ExchangeRateDTO exchangeRateDTO = new ExchangeRateDTO();
-            exchangeRateDTO.setId(exchangeRates.get(i).getId());
-            exchangeRateDTO.setBaseCurrency(
-                    currencyDAO.getById(exchangeRates.get(i).getBaseCurrency()).get());
-            exchangeRateDTO.setTargetCurrency(
-                    currencyDAO.getById(exchangeRates.get(i).getTargetCurrency()).get());
-            exchangeRateDTO.setRate(exchangeRates.get(i).getRate());
-            exchangeRateDTOS.add(exchangeRateDTO);
+    public ExchangeRateDTO getByCodePair(String baseCurrency, String targetCurrency) {
+        try {
+            Currency currencyFrom = currencyDAO.getByCode(baseCurrency)
+                    .orElseThrow(()  ->new ApplicationException(ErrorMessage.NO_CODE_PAIR_DB));
+            Currency currencyTo = currencyDAO.getByCode(targetCurrency)
+                    .orElseThrow(() -> new ApplicationException(ErrorMessage.NO_CODE_PAIR_DB));
+            return exchangeRateDAO.getByIdPair(currencyFrom.getId(), currencyTo.getId())
+                    .map(exchangeRateMapper::toDTO)
+                    .orElseThrow(() -> new ApplicationException(ErrorMessage.NO_CODE_PAIR_DB));
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
         }
-
-        return exchangeRateDTOS;
     }
 
+    public ExchangeRateDTO getById(int id) {
+        try {
+            return exchangeRateDAO.getById(id)
+                    .map(exchangeRateMapper::toDTO)
+                    .orElseThrow(ExchangeRateNotFoundException::new);
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
+        }
+    }
+
+    public List<ExchangeRateDTO> getAll() {
+        try {
+            return exchangeRateDAO.getAll()
+                    .stream().map(exchangeRateMapper::toDTO)
+                    .toList();
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
+        }
+    }
+
+    public void save(ExchangeRateDTO exchangeRateDTO) {
+        try {
+            ExchangeRate exchangeRate = exchangeRateMapper.toEntity(exchangeRateDTO);
+            Integer savedRows = exchangeRateDAO.save(exchangeRate);
+            if (savedRows == 0) {
+                throw new CodePairExistsException();
+            }
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
+        }
+    }
+
+    public void update(ExchangeRateDTO exchangeRateDTO) {
+        try {
+            ExchangeRate exchangeRate = exchangeRateMapper.toEntity(exchangeRateDTO);
+            Integer updatedRows = exchangeRateDAO.update(exchangeRate);
+            if (updatedRows == 0) {
+                throw new ExchangeRateNotFoundException();
+            }
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
+        }
+    }
+
+    public void delete(Integer id) {
+        try {
+            Integer deletedRows = exchangeRateDAO.delete(id);
+            if (deletedRows == 0) {
+                throw new ExchangeRateNotFoundException();
+            }
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
+        }
+    }
 }

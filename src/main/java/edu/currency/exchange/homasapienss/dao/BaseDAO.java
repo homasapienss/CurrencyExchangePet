@@ -1,15 +1,13 @@
 package edu.currency.exchange.homasapienss.dao;
 
-import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
-
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 public interface BaseDAO<T> {
-    Optional<T> getById(int id);
-    List<T> getAll()
-            throws ApplicationException;
-    T create(T entity);
-    T update(T entity);
-    void delete(int id);
+    Optional<T> getById(Integer id) throws SQLException;
+    List<T> getAll() throws SQLException ;
+    Integer save(T entity) throws SQLException;
+    Integer update(T entity) throws SQLException ;
+    Integer delete(Integer id) throws SQLException;
 }

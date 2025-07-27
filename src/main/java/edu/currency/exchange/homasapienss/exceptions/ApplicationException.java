@@ -1,7 +1,7 @@
 package edu.currency.exchange.homasapienss.exceptions;
 
 public class ApplicationException extends RuntimeException {
-    private ErrorMessage errorMessage;
+    private final ErrorMessage errorMessage;
 
     public ApplicationException(ErrorMessage message) {
         this.errorMessage = message;

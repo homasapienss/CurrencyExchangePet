@@ -1,12 +1,12 @@
 package edu.currency.exchange.homasapienss.servlets;
 
+import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
+import edu.currency.exchange.homasapienss.dao.ExchangeRateDAO;
 import edu.currency.exchange.homasapienss.dto.ExchangeRateDTO;
-import edu.currency.exchange.homasapienss.entities.ExchangeRate;
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 import edu.currency.exchange.homasapienss.exceptions.ErrorMessage;
 import edu.currency.exchange.homasapienss.exceptions.ExceptionHandler;
 import edu.currency.exchange.homasapienss.service.ExchangeRateService;
-import edu.currency.exchange.homasapienss.utils.ExchangeRateUtil;
 import edu.currency.exchange.homasapienss.utils.StringUtil;
 import edu.currency.exchange.homasapienss.utils.ValidationUtil;
 import jakarta.servlet.ServletException;
@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends BaseServlet {
-    ExchangeRateService exchangeRateService = new ExchangeRateService();
+    ExchangeRateService exchangeRateService = new ExchangeRateService(new ExchangeRateDAO(), new CurrencyDAO());
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -29,9 +29,7 @@ public class ExchangeRateServlet extends BaseServlet {
             String target = pair.substring(3);
             try {
                 ValidationUtil.validateExchangeRate(pair);
-                ExchangeRateDTO rateDTO = exchangeRateService.convertToExchangeRateDTO(
-                        exchangeRateService.getByCodePair(base, target));
-                sendJsonResponse(resp, rateDTO, 200);
+                sendJsonResponse(resp, exchangeRateService.getByCodePair(base, target), 200);
             }catch (ApplicationException e) {
                 new ExceptionHandler().handleException(resp, e);
             }
@@ -55,11 +53,10 @@ public class ExchangeRateServlet extends BaseServlet {
             String rate = req.getParameter("rate");
             try {
                 ValidationUtil.validateExchangeRate(base,target,rate);
-                ExchangeRate exchangeRate = exchangeRateService.getByCodePair(base, target);
-                exchangeRate.setRate(BigDecimal.valueOf(Double.parseDouble(rate)));
-                exchangeRateService.update(exchangeRate);
-                ExchangeRateDTO rateDTO = exchangeRateService.convertToExchangeRateDTO(exchangeRate);
-                sendJsonResponse(resp, rateDTO, 200);
+                ExchangeRateDTO exchangeRateDTO = exchangeRateService.getByCodePair(base, target);
+                exchangeRateDTO.setRate(BigDecimal.valueOf(Double.parseDouble(rate)));
+                exchangeRateService.update(exchangeRateDTO);
+                sendJsonResponseSuccess(resp);
             }catch (ApplicationException e){
                 new ExceptionHandler().handleException(resp, e);
             }

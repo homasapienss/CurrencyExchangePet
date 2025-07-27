@@ -1,26 +1,36 @@
 package edu.currency.exchange.homasapienss.utils;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.*;
 
 public final class ConnectionManager {
     private static String URL_KEY = "db.url";
     private static String USERNAME_KEY = "db.username";
     private static String PASSWORD_KEY = "db.password";
-    private static Connection CONNECTION;
+
+    private static final HikariDataSource dataSource;
 
     static {
         try {
             Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            CONNECTION = DriverManager.getConnection(
-                    PropertiesUtil.getProperty(URL_KEY),
-                    PropertiesUtil.getProperty(USERNAME_KEY),
-                    PropertiesUtil.getProperty(PASSWORD_KEY));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(PropertiesUtil.getProperty(URL_KEY));
+            config.setUsername(PropertiesUtil.getProperty(USERNAME_KEY));
+            config.setPassword(PropertiesUtil.getProperty(PASSWORD_KEY));
+
+            // Опциональные настройки
+            config.setMaximumPoolSize(10);
+            config.setMinimumIdle(2);
+            config.setIdleTimeout(30000); // 30 сек
+            config.setConnectionTimeout(10000); // 10 сек
+            config.setMaxLifetime(1800000); // 30 минут
+
+            dataSource = new HikariDataSource(config);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed initialize DATA BASE");
         }
     }
 
@@ -28,17 +38,7 @@ public final class ConnectionManager {
 
     }
 
-//    public static Connection getConnection() {
-//        return CONNECTION;
-//    }
-
-    public static PreparedStatement prepareStatement(String query) {
-        PreparedStatement ps;
-        try {
-            ps = CONNECTION.prepareStatement(query);
-            return ps;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 }
