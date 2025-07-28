@@ -3,7 +3,6 @@ package edu.currency.exchange.homasapienss.servlets;
 import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
 import edu.currency.exchange.homasapienss.dao.ExchangeRateDAO;
 import edu.currency.exchange.homasapienss.dto.ExchangeRateDTO;
-import edu.currency.exchange.homasapienss.entities.ExchangeRate;
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 import edu.currency.exchange.homasapienss.exceptions.ExceptionHandler;
 import edu.currency.exchange.homasapienss.service.CurrencyService;
@@ -20,12 +19,12 @@ import java.math.BigDecimal;
 @WebServlet("/exchangeRates")
 public class ExchangeRatesServlet extends BaseServlet {
     ExchangeRateService exchangeRateService = new ExchangeRateService(new ExchangeRateDAO(),
-                                                                      new CurrencyDAO());
+                                                                      new CurrencyService(new CurrencyDAO()));
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            sendJsonResponse(resp, exchangeRateService.getAll(), 200);
+            sendJsonResponse(resp, exchangeRateService.getAllDTO(), 200);
         } catch (ApplicationException e) {
             new ExceptionHandler().handleException(resp, e);
         }
@@ -40,8 +39,8 @@ public class ExchangeRatesServlet extends BaseServlet {
             ValidationUtil.validateExchangeRate(base, target, rate);
             ExchangeRateDTO exchangeRateDTO = new ExchangeRateDTO();
             exchangeRateDTO.setRate(BigDecimal.valueOf(Double.parseDouble(rate)));
-            exchangeRateDTO.setBaseCurrency(exchangeRateService.getBaseCurrencyId(base));
-            exchangeRateDTO.setTargetCurrency(exchangeRateService.getTargetCurrencyId(target));
+            exchangeRateDTO.setBaseCurrency(exchangeRateService.getCurrencyIdByCode(base));
+            exchangeRateDTO.setTargetCurrency(exchangeRateService.getCurrencyIdByCode(target));
             exchangeRateService.save(exchangeRateDTO);
             sendJsonResponseSuccess(resp);
         } catch (ApplicationException e) {

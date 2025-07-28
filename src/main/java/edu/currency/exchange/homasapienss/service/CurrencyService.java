@@ -30,6 +30,16 @@ public class CurrencyService {
         }
     }
 
+    public int getIdByCode(String code) {
+        try {
+            return currencyDAO.getByCode(code)
+                    .orElseThrow(CurrencyNotFoundException::new)
+                    .getId();
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
+        }
+    }
+
     public CurrencyDTO getByCode(String code) {
         try {
             return currencyDAO.getByCode(code)

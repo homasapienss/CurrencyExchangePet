@@ -13,7 +13,7 @@ import java.math.RoundingMode;
 public class ExchangeService {
     CurrencyService currencyService = new CurrencyService(new CurrencyDAO());
     ExchangeRateService exchangeRateService = new ExchangeRateService(new ExchangeRateDAO(),
-                                                                      new CurrencyDAO());
+                                                                      new CurrencyService(new CurrencyDAO()));
 
     public ExchangeDTO doExchange(String from, String to, String amountString) {
         ExchangeDTO exchangeDTO = new ExchangeDTO();
@@ -32,17 +32,22 @@ public class ExchangeService {
             exchangeDTO.setRate(exchangeRateDTO.getRate());
             exchangeDTO.setConvertedAmount(amountToDecimal(amount, exchangeDTO.getRate()));
             return exchangeDTO;
-        } catch (ApplicationException e) {
+        } catch (ApplicationException e1) {
             try {
                 ExchangeRateDTO exchangeRateDTO = exchangeRateService.getByCodePair(to, from);
                 exchangeDTO.setRate(BigDecimal.ONE.divide(exchangeRateDTO.getRate(), 4,
                                                           RoundingMode.HALF_UP));
                 exchangeDTO.setConvertedAmount(amountToDecimal(amount, exchangeDTO.getRate()));
                 return exchangeDTO;
-            } catch (ApplicationException ex) {
+            } catch (ApplicationException e2) {
                 try {
-                    return null;
-                }catch (ApplicationException exc){
+                    BigDecimal usdFrom = exchangeRateService.getByCodePair("USD", from).getRate();
+                    BigDecimal usdTo = exchangeRateService.getByCodePair("USD", to).getRate();
+                    BigDecimal crossRate = usdTo.divide(usdFrom, 2, RoundingMode.HALF_UP);
+                    exchangeDTO.setRate(crossRate);
+                    exchangeDTO.setConvertedAmount(amountToDecimal(amount, exchangeDTO.getRate()));
+                    return exchangeDTO;
+                }catch (ApplicationException e3){
                     throw new ApplicationException(ErrorMessage.ERROR);
                 }
             }
