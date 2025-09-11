@@ -18,8 +18,7 @@ import java.math.BigDecimal;
 
 @WebServlet("/exchangeRates")
 public class ExchangeRatesServlet extends BaseServlet {
-    ExchangeRateService exchangeRateService = new ExchangeRateService(new ExchangeRateDAO(),
-                                                                      new CurrencyService(new CurrencyDAO()));
+    ExchangeRateService exchangeRateService = new ExchangeRateService();
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

@@ -20,13 +20,11 @@ public class CurrencyDAO implements BaseDAO<Currency> {
     private static final String SQL_UPDATE = "UPDATE Currencies SET Code = ?, FullName = ?, Sign = ? WHERE id = ?";
     private static final String SQL_DELETE = "DELETE FROM Currencies WHERE id = ?";
 
-    private Optional<Currency> getCurrency(ResultSet resultSet)
-            throws SQLException {
+    private Optional<Currency> getCurrency(ResultSet resultSet) throws SQLException {
         return resultSet.next() ? Optional.of(extractCurrency(resultSet)) : Optional.empty();
     }
 
-    @Override public Optional<Currency> getById(Integer id)
-            throws SQLException {
+    @Override public Optional<Currency> getById(Integer id) throws SQLException {
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_SELECT_BY_ID)) {
             stmt.setInt(1, id);
@@ -36,8 +34,7 @@ public class CurrencyDAO implements BaseDAO<Currency> {
         }
     }
 
-    public Optional<Currency> getByCode(String code)
-            throws SQLException {
+    public Optional<Currency> getByCode(String code) throws SQLException {
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_SELECT_BY_CODE)) {
             stmt.setString(1, code);
@@ -47,8 +44,7 @@ public class CurrencyDAO implements BaseDAO<Currency> {
         }
     }
 
-    @Override public List<Currency> getAll()
-            throws SQLException {
+    @Override public List<Currency> getAll() throws SQLException {
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_SELECT_ALL);
              ResultSet resultSet = stmt.executeQuery()) {
@@ -58,8 +54,7 @@ public class CurrencyDAO implements BaseDAO<Currency> {
         }
     }
 
-    private Currency extractCurrency(ResultSet resultSet)
-            throws SQLException {
+    private Currency extractCurrency(ResultSet resultSet) throws SQLException {
         Currency currency = new Currency();
         currency.setCode(resultSet.getString("Code"));
         currency.setName(resultSet.getString("FullName"));
@@ -68,8 +63,7 @@ public class CurrencyDAO implements BaseDAO<Currency> {
         return currency;
     }
 
-    @Override public Integer save(Currency currency)
-            throws SQLException {
+    @Override public Integer save(Currency currency) throws SQLException {
         try (Connection conn = ConnectionManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(SQL_INSERT)) {
             stmt.setString(1, currency.getCode());

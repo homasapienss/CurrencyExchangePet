@@ -13,12 +13,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CurrencyService {
-    private final CurrencyDAO currencyDAO;
+    private final CurrencyDAO currencyDAO = new CurrencyDAO();
     private final CurrencyMapper currencyMapper = new CurrencyMapper();
-
-    public CurrencyService(CurrencyDAO currencyDAO) {
-        this.currencyDAO = currencyDAO;
-    }
 
     public CurrencyDTO getById(int id) {
         try {

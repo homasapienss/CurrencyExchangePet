@@ -20,8 +20,7 @@ import java.math.BigDecimal;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends BaseServlet {
-    ExchangeRateService exchangeRateService = new ExchangeRateService(new ExchangeRateDAO(),
-                                                                      new CurrencyService(new CurrencyDAO()));
+    ExchangeRateService exchangeRateService = new ExchangeRateService();
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -36,15 +35,12 @@ public class ExchangeRateServlet extends BaseServlet {
                 new ExceptionHandler().handleException(resp, e);
             }
         }else {
-            try {
-                throw new ApplicationException(ErrorMessage.INVALID_DATA);
-            }catch (ApplicationException e) {
-                new ExceptionHandler().handleException(resp, e);
-            }
+            new ExceptionHandler().handleException(resp, new ApplicationException(ErrorMessage.INVALID_DATA));
         }
 
 
     }
+
 
     @Override protected void doPut(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -52,7 +48,7 @@ public class ExchangeRateServlet extends BaseServlet {
         if (!pair.isBlank()){
             String base = pair.substring(0, 3);
             String target = pair.substring(3);
-            String rate = req.getParameter("rate");
+            String rate = req.getReader().readLine().split("=")[1];
             try {
                 ValidationUtil.validateExchangeRate(base,target,rate);
                 ExchangeRateDTO exchangeRateDTO = exchangeRateService.getByCodePair(base, target);
@@ -63,12 +59,9 @@ public class ExchangeRateServlet extends BaseServlet {
                 new ExceptionHandler().handleException(resp, e);
             }
         } else {
-            try {
-                throw new ApplicationException(ErrorMessage.INVALID_DATA);
-            }catch (ApplicationException e){
-                new ExceptionHandler().handleException(resp, e);
-            }
+            new ExceptionHandler().handleException(resp, new ApplicationException(ErrorMessage.INVALID_DATA));
         }
 
     }
+
 }

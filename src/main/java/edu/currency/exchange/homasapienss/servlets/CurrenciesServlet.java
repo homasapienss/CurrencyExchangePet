@@ -16,7 +16,7 @@ import java.io.IOException;
 @WebServlet("/currencies")
 public class CurrenciesServlet extends BaseServlet {
 
-    CurrencyService currencyService = new CurrencyService(new CurrencyDAO());
+    CurrencyService currencyService = new CurrencyService();
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

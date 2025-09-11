@@ -11,9 +11,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class ExchangeService {
-    CurrencyService currencyService = new CurrencyService(new CurrencyDAO());
-    ExchangeRateService exchangeRateService = new ExchangeRateService(new ExchangeRateDAO(),
-                                                                      new CurrencyService(new CurrencyDAO()));
+    CurrencyService currencyService = new CurrencyService();
+    ExchangeRateService exchangeRateService = new ExchangeRateService();
 
     public ExchangeDTO doExchange(String from, String to, String amountString) {
         ExchangeDTO exchangeDTO = new ExchangeDTO();

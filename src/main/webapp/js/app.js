@@ -140,7 +140,7 @@ $(document).ready(function() {
         // send values to the server with a patch request
         $.ajax({
             url: `${host}/exchangeRate/${pair}`,
-            type: "PATCH",
+            type: "PUT",
             contentType : "application/x-www-form-urlencoded",
             data: `rate=${exchangeRate}`,
             success: function() {

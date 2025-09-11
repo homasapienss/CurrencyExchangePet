@@ -16,14 +16,9 @@ import java.util.List;
 
 public class ExchangeRateService {
 
-    ExchangeRateDAO exchangeRateDAO;
+    private final ExchangeRateDAO exchangeRateDAO = new ExchangeRateDAO();
     private final ExchangeRateMapper exchangeRateMapper = new ExchangeRateMapper();
-    private final CurrencyService currencyService;
-
-    public ExchangeRateService(ExchangeRateDAO exchangeRateDAO, CurrencyService currencyService) {
-        this.exchangeRateDAO = exchangeRateDAO;
-        this.currencyService = currencyService;
-    }
+    private final CurrencyService currencyService = new CurrencyService();
 
     public int getCurrencyIdByCode(String code) {
         return currencyService.getIdByCode(code);
