@@ -1,9 +1,7 @@
 package edu.currency.exchange.homasapienss.servlets;
 
-import edu.currency.exchange.homasapienss.dto.ExchangeDTO;
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 import edu.currency.exchange.homasapienss.exceptions.ExceptionHandler;
-import edu.currency.exchange.homasapienss.service.CurrencyService;
 import edu.currency.exchange.homasapienss.service.ExchangeService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

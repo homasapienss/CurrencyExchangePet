@@ -1,6 +1,5 @@
 package edu.currency.exchange.homasapienss.servlets;
 
-import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 import edu.currency.exchange.homasapienss.exceptions.ExceptionHandler;
 import edu.currency.exchange.homasapienss.service.CurrencyService;
@@ -26,6 +25,5 @@ public class CurrencyServlet extends BaseServlet {
         } catch (ApplicationException e) {
             new ExceptionHandler().handleException(resp, e);
         }
-
     }
 }

@@ -10,6 +10,7 @@ import edu.currency.exchange.homasapienss.exceptions.exists.CodePairExistsExcept
 import edu.currency.exchange.homasapienss.exceptions.notfound.ExchangeRateNotFoundException;
 import edu.currency.exchange.homasapienss.mappers.ExchangeRateMapper;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,17 @@ public class ExchangeRateService {
 
     public int getCurrencyIdByCode(String code) {
         return currencyService.getIdByCode(code);
+    }
+
+    public ExchangeRate getByCodePairEntity(String baseCurrency, String targetCurrency) {
+        int baseId = currencyService.getIdByCode(baseCurrency);
+        int targetId = currencyService.getIdByCode(targetCurrency);
+        try {
+            return exchangeRateDAO.getByIdPair(baseId, targetId)
+                    .orElseThrow(() -> new ApplicationException(ErrorMessage.NO_CODE_PAIR_DB));
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
+        }
     }
 
     public ExchangeRateDTO getByCodePair(String baseCurrency, String targetCurrency) {
@@ -66,10 +78,8 @@ public class ExchangeRateService {
             List <ExchangeRateCurrenciesDTO> fullExchangeRates = new ArrayList<>();
             for (ExchangeRate exRate : exchangeRates) {
                 ExchangeRateCurrenciesDTO fullExchangeRate = new ExchangeRateCurrenciesDTO();
-                fullExchangeRate.setBaseCurrency(currencyService
-                                                         .getById(exRate.getBaseCurrency()));
-                fullExchangeRate.setTargetCurrency(currencyService
-                                                           .getById(exRate.getTargetCurrency()));
+                fullExchangeRate.setBaseCurrency(currencyService.getById(exRate.getBaseCurrency()));
+                fullExchangeRate.setTargetCurrency(currencyService.getById(exRate.getTargetCurrency()));
                 fullExchangeRate.setRate(exRate.getRate());
                 fullExchangeRates.add(fullExchangeRate);
             }
@@ -91,9 +101,29 @@ public class ExchangeRateService {
         }
     }
 
-    public void update(ExchangeRateDTO exchangeRateDTO) {
+    public void saveByCodePair(String base, String target, String rate) {
+        ExchangeRateDTO exchangeRateDTO = new ExchangeRateDTO();
+        exchangeRateDTO.setRate(BigDecimal.valueOf(Double.parseDouble(rate)));
+        exchangeRateDTO.setBaseCurrency(getCurrencyIdByCode(base));
+        exchangeRateDTO.setTargetCurrency(getCurrencyIdByCode(target));
+        save(exchangeRateDTO);
+    }
+
+    public void updateByCodePair(String base, String target, String rate) {
         try {
-            ExchangeRate exchangeRate = exchangeRateMapper.toEntity(exchangeRateDTO);
+            ExchangeRate exchangeRate = getByCodePairEntity(base, target);
+            exchangeRate.setRate(BigDecimal.valueOf(Double.parseDouble(rate)));
+            Integer updatedRows = exchangeRateDAO.update(exchangeRate);
+            if (updatedRows == 0) {
+                throw new ExchangeRateNotFoundException();
+            }
+        } catch (SQLException e) {
+            throw new ApplicationException(ErrorMessage.ERROR);
+        }
+    }
+
+    public void update(ExchangeRate exchangeRate) {
+        try {
             Integer updatedRows = exchangeRateDAO.update(exchangeRate);
             if (updatedRows == 0) {
                 throw new ExchangeRateNotFoundException();

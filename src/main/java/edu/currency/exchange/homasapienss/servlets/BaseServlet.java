@@ -13,7 +13,7 @@ public class BaseServlet extends HttpServlet {
         resp.getWriter().write(JsonUtil.writeJson(payload));
         resp.setStatus(status);
     }
-    protected <T> void sendJsonResponseSuccess(HttpServletResponse resp)
+    protected void sendJsonResponseSuccess(HttpServletResponse resp)
             throws IOException {
         resp.getWriter().write(JsonUtil.writeJson(new ExceptionMessage("Операция прошла успешно")));
         resp.setStatus(201);

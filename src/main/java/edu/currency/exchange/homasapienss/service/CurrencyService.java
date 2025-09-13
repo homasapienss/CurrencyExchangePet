@@ -56,7 +56,8 @@ public class CurrencyService {
         }
     }
 
-    public void save(CurrencyDTO currencyDTO) {
+    public void save(String code, String name, String sign) {
+        CurrencyDTO currencyDTO = new CurrencyDTO(code, name, sign);
         try {
             Currency currency = currencyMapper.toEntity(currencyDTO);
             Integer savedRows = currencyDAO.save(currency);

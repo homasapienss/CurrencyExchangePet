@@ -1,7 +1,5 @@
 package edu.currency.exchange.homasapienss.servlets;
 
-import edu.currency.exchange.homasapienss.dao.CurrencyDAO;
-import edu.currency.exchange.homasapienss.dto.CurrencyDTO;
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 import edu.currency.exchange.homasapienss.exceptions.ExceptionHandler;
 import edu.currency.exchange.homasapienss.service.CurrencyService;
@@ -34,8 +32,7 @@ public class CurrenciesServlet extends BaseServlet {
         String sign = req.getParameter("sign");
         try {
             ValidationUtil.validateCurrency(code, name, sign);
-            CurrencyDTO currencyDTO = new CurrencyDTO(code, name, sign);
-            currencyService.save(currencyDTO);
+            currencyService.save(code, name, sign);
             sendJsonResponseSuccess(resp);
         }catch (ApplicationException e) {
             new ExceptionHandler().handleException(resp, e);

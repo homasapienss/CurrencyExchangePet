@@ -1,13 +1,9 @@
 package edu.currency.exchange.homasapienss.utils;
 
-import edu.currency.exchange.homasapienss.entities.ExchangeRate;
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
 import edu.currency.exchange.homasapienss.exceptions.ErrorMessage;
 import edu.currency.exchange.homasapienss.exceptions.validation.EmptyFormFieldException;
 import edu.currency.exchange.homasapienss.exceptions.validation.InvalidDataException;
-
-import java.math.BigDecimal;
-import java.net.http.HttpRequest;
 
 public class ValidationUtil {
     public static void validateCurrency(String code, String name, String sign) {
@@ -36,6 +32,16 @@ public class ValidationUtil {
         if (StringUtil.isEmptyField(base, target, rate)){
             throw new ApplicationException(ErrorMessage.NO_DATA_FIELD);
         }else if (!ExchangeRateUtil.isCorrectArgs(base, target)) {
+            throw new ApplicationException(ErrorMessage.INVALID_DATA);
+        }else if (Double.parseDouble(rate)<=0){
+            throw new ApplicationException(ErrorMessage.INVALID_DATA);
+        }
+    }
+
+    public static void validateExchangeRate(String pair, String rate) {
+        if (pair.isBlank()){
+            throw new ApplicationException(ErrorMessage.NO_CODE_URL);
+        }else if (!ExchangeRateUtil.isCorrectPair(pair)) {
             throw new ApplicationException(ErrorMessage.INVALID_DATA);
         }else if (Double.parseDouble(rate)<=0){
             throw new ApplicationException(ErrorMessage.INVALID_DATA);
