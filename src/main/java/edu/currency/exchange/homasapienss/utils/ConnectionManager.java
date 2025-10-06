@@ -20,12 +20,11 @@ public final class ConnectionManager {
             config.setUsername(PropertiesUtil.getProperty(USERNAME_KEY));
             config.setPassword(PropertiesUtil.getProperty(PASSWORD_KEY));
 
-            // Опциональные настройки
             config.setMaximumPoolSize(10);
             config.setMinimumIdle(2);
-            config.setIdleTimeout(30000); // 30 сек
-            config.setConnectionTimeout(10000); // 10 сек
-            config.setMaxLifetime(1800000); // 30 минут
+            config.setIdleTimeout(30000);
+            config.setConnectionTimeout(10000);
+            config.setMaxLifetime(1800000);
 
             dataSource = new HikariDataSource(config);
         } catch (Exception e) {

@@ -1,7 +1,6 @@
 package edu.currency.exchange.homasapienss.servlets;
 
 import edu.currency.exchange.homasapienss.exceptions.ApplicationException;
-import edu.currency.exchange.homasapienss.exceptions.ErrorMessage;
 import edu.currency.exchange.homasapienss.exceptions.ExceptionHandler;
 import edu.currency.exchange.homasapienss.service.ExchangeRateService;
 import edu.currency.exchange.homasapienss.utils.StringUtil;
@@ -12,8 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @WebServlet("/exchangeRate/*")
 public class ExchangeRateServlet extends BaseServlet {
