@@ -1,6 +1,5 @@
-package edu.currency.exchange.homasapienss.repos;
+package edu.currency.exchange.homasapienss.Currency;
 
-import edu.currency.exchange.homasapienss.entities.Currency;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

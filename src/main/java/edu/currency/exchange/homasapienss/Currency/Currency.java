@@ -1,4 +1,4 @@
-package edu.currency.exchange.homasapienss.entities;
+package edu.currency.exchange.homasapienss.Currency;
 
 import jakarta.persistence.*;
 import lombok.*;
