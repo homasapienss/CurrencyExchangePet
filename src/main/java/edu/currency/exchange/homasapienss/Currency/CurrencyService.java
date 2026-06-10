@@ -1,5 +1,6 @@
 package edu.currency.exchange.homasapienss.Currency;
 
+import edu.currency.exchange.homasapienss.exception.BadRequestException;
 import edu.currency.exchange.homasapienss.exception.already_exists.CurrencyAlreadyExistsException;
 import edu.currency.exchange.homasapienss.exception.not_found.CurrencyNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,8 @@ public class CurrencyService {
 
     @Transactional(readOnly = true)
     public Currency getByCode(String code) {
-        return currencyRepo.findByCode(code)
+        String validatedCode = validateCode(code);
+        return currencyRepo.findByCode(validatedCode)
                 .orElseThrow(CurrencyNotFoundException::new);
     }
 
@@ -41,5 +43,12 @@ public class CurrencyService {
                 .name(currencyCreateRequest.getName())
                 .sign(currencyCreateRequest.getSign())
                 .build());
+    }
+
+    private String validateCode(String code) {
+        if (code == null || code.isBlank() || code.length() != 3) {
+            throw new BadRequestException("Валюта введена не правлильно");
+        }
+        return code;
     }
 }

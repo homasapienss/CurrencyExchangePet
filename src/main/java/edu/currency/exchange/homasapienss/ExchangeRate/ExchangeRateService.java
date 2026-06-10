@@ -59,7 +59,7 @@ public class ExchangeRateService {
     }
 
     private ValidatedCodePair validateCodePair(String codePair) {
-        if ((codePair.length() != 6) && (!codePair.isBlank())) {
+        if ((codePair.length() != 6) || (!codePair.isBlank())) {
             throw new BadRequestException("Плохой ввод валютной пары");
         }
         String from = codePair.substring(0, 3);

@@ -1,7 +1,5 @@
 package edu.currency.exchange.homasapienss.ExchangeRate;
 
-import edu.currency.exchange.homasapienss.ValidatedCodePair;
-import edu.currency.exchange.homasapienss.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +13,20 @@ import java.util.List;
 public class ExchangeRateController {
     private final ExchangeRateService exchangeRateService;
 
-    @GetMapping("/exchangeRates")
+    @GetMapping("/exchangeRates") // получить все валютные курсы
     public ResponseEntity<List<ExchangeRate>> getAllExchangeRates() {
         return ResponseEntity
                 .ok(exchangeRateService.getAll());
     }
 
-    @GetMapping("/exchangeRate/{code-pair}")
-    public ResponseEntity<ExchangeRate> getExchangeRate(@PathVariable("code-pair") String codePair) {
+    @GetMapping("/exchangeRate/{codePair}") // получить ввалютный курс по валютной паре
+    public ResponseEntity<ExchangeRate> getExchangeRate(@PathVariable("codePair") String codePair) {
         return ResponseEntity
                 .ok(exchangeRateService.getExchangeRateByCodePair(codePair));
     }
 
-    @PatchMapping("/exchangeRate/{code-pair}") //изменить обменный курс валют
-    public ResponseEntity<ExchangeRate> patchExchangeRate(@PathVariable("code-pair") String codePair,
+    @PatchMapping("/exchangeRate/{codePair}") //изменить обменный курс валют
+    public ResponseEntity<ExchangeRate> patchExchangeRate(@PathVariable("codePair") String codePair,
                                                           @RequestParam BigDecimal rate) {
         return ResponseEntity
                 .ok(exchangeRateService.patchExchangeRate(
@@ -37,7 +35,7 @@ public class ExchangeRateController {
                 );
     }
 
-    @PostMapping("/exchangeRates")
+    @PostMapping("/exchangeRates") // создать новый валютный курс
     public ResponseEntity<ExchangeRate> createExchangeRate(@RequestBody ExchangeRateCreateRequest createRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
