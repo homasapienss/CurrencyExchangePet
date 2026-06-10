@@ -1,12 +1,15 @@
 package edu.currency.exchange.homasapienss.ExchangeRate;
 
 import edu.currency.exchange.homasapienss.Currency.CurrencyService;
+import edu.currency.exchange.homasapienss.ValidatedCodePair;
+import edu.currency.exchange.homasapienss.exception.BadRequestException;
 import edu.currency.exchange.homasapienss.exception.already_exists.ExchangeRateAlreadyExistsException;
 import edu.currency.exchange.homasapienss.exception.not_found.ExchangeRateNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -20,12 +23,6 @@ public class ExchangeRateService {
 //        return exchangeRateRepo.findByBaseCurrency_IdAndTargetCurrency_Id(fromId, toId)
 //                .orElseThrow(ExchangeRateNotFoundException::new);
 //    }
-
-    @Transactional(readOnly = true)
-    public ExchangeRate getExchangeRateByCodes(String fromCode, String toCode) {
-        return exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(fromCode, toCode)
-                .orElseThrow(ExchangeRateNotFoundException::new);
-    }
 
     @Transactional(readOnly = true)
     public List<ExchangeRate> getAll() {
@@ -43,5 +40,30 @@ public class ExchangeRateService {
                 .targetCurrency(currencyService.getByCode(createRequest.getTargetCurrencyCode()))
                 .rate(createRequest.getRate())
                 .build());
+    }
+
+    @Transactional(readOnly = true)
+    public ExchangeRate getExchangeRateByCodePair(String codePair) {
+        ValidatedCodePair validated = validateCodePair(codePair);
+        return exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(validated.getFrom(), validated.getTo())
+                .orElseThrow(ExchangeRateNotFoundException::new);
+    }
+
+    @Transactional
+    public ExchangeRate patchExchangeRate(String codePair, BigDecimal rate) {
+        ValidatedCodePair validated = validateCodePair(codePair);
+        ExchangeRate byCodes = exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(validated.getFrom(), validated.getTo())
+                .orElseThrow(ExchangeRateNotFoundException::new);
+        byCodes.setRate(rate);
+        return byCodes;
+    }
+
+    private ValidatedCodePair validateCodePair(String codePair) {
+        if ((codePair.length() != 6) && (!codePair.isBlank())) {
+            throw new BadRequestException("Плохой ввод валютной пары");
+        }
+        String from = codePair.substring(0, 3);
+        String to = codePair.substring(3, 6);
+        return new ValidatedCodePair(from, to);
     }
 }
