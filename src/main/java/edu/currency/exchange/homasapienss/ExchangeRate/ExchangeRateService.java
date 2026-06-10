@@ -15,11 +15,11 @@ public class ExchangeRateService {
     private final ExchangeRateRepo exchangeRateRepo;
     private final CurrencyService currencyService;
 
-    @Transactional(readOnly = true)
-    public ExchangeRate getExchangeRateByIds(Long fromId, Long toId) {
-        return exchangeRateRepo.findByBaseCurrency_IdAndTargetCurrency_Id(fromId, toId)
-                .orElseThrow(ExchangeRateNotFoundException::new);
-    }
+//    @Transactional(readOnly = true)
+//    public ExchangeRate getExchangeRateByIds(Long fromId, Long toId) {
+//        return exchangeRateRepo.findByBaseCurrency_IdAndTargetCurrency_Id(fromId, toId)
+//                .orElseThrow(ExchangeRateNotFoundException::new);
+//    }
 
     @Transactional(readOnly = true)
     public ExchangeRate getExchangeRateByCodes(String fromCode, String toCode) {
