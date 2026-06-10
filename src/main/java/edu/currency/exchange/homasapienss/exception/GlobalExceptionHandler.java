@@ -26,4 +26,10 @@ public class GlobalExceptionHandler {
     public ErrorMessage handleNotFoundException(NotFoundException ex) {
         return ErrorMessage.create(ex);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorMessage handleBadRequestException(BadRequestException ex) {
+        return ErrorMessage.create(ex);
+    }
 }
