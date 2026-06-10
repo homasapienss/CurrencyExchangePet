@@ -11,7 +11,11 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Builder
-@Table(name = "exchange_rates")
+@Table(
+        name = "exchange_rates",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_stock_shop_product", columnNames = {"base_currency_id", "target_currency_id"})
+        })
 @Entity
 public class ExchangeRate {
     @Id
@@ -23,5 +27,6 @@ public class ExchangeRate {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_currency_id", nullable = false)
     private Currency targetCurrency;
+    @Column(precision = 38, scale = 36, nullable = false)
     private BigDecimal rate;
 }
