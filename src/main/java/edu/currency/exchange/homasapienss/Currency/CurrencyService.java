@@ -33,15 +33,15 @@ public class CurrencyService {
     }
 
     @Transactional
-    public Currency create(CurrencyCreateRequest currencyCreateRequest) {
-        boolean byCode = currencyRepo.existsByCode(currencyCreateRequest.getCode());
+    public Currency create(String code, String name, String sign) {
+        boolean byCode = currencyRepo.existsByCode(code);
         if (byCode) {
             throw new CurrencyAlreadyExistsException();
         }
         return currencyRepo.save(Currency.builder()
-                .code(currencyCreateRequest.getCode())
-                .name(currencyCreateRequest.getName())
-                .sign(currencyCreateRequest.getSign())
+                .code(code)
+                .name(name)
+                .sign(sign)
                 .build());
     }
 

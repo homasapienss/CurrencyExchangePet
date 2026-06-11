@@ -24,9 +24,11 @@ public class CurrencyController {
     }
 
     @PostMapping("/currencies") // добавить новую валюту
-    public ResponseEntity<Currency> createCurrency(@RequestBody CurrencyCreateRequest currencyCreateRequest) {
+    public ResponseEntity<Currency> createCurrency(@RequestParam String code,
+                                                   @RequestParam String name,
+                                                   @RequestParam String sign) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(currencyService.create(currencyCreateRequest));
+                .body(currencyService.create(code, name, sign));
     }
 }

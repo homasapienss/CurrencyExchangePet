@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ErrorMessage {
-    private String errorMessage;
+    private String message;
 
     public static ErrorMessage create(ApplicationException ex) {
         return new ErrorMessage(ex.getErrorMessage());

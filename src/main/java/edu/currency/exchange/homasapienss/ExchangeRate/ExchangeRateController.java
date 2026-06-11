@@ -14,20 +14,20 @@ public class ExchangeRateController {
     private final ExchangeRateService exchangeRateService;
 
     @GetMapping("/exchangeRates") // получить все валютные курсы
-    public ResponseEntity<List<ExchangeRate>> getAllExchangeRates() {
+    public ResponseEntity<List<ExchangeRateDto>> getAllExchangeRates() {
         return ResponseEntity
                 .ok(exchangeRateService.getAll());
     }
 
     @GetMapping("/exchangeRate/{codePair}") // получить ввалютный курс по валютной паре
-    public ResponseEntity<ExchangeRate> getExchangeRate(@PathVariable("codePair") String codePair) {
+    public ResponseEntity<ExchangeRateDto> getExchangeRate(@PathVariable("codePair") String codePair) {
         return ResponseEntity
                 .ok(exchangeRateService.getExchangeRateByCodePair(codePair));
     }
 
     @PatchMapping("/exchangeRate/{codePair}") //изменить обменный курс валют
-    public ResponseEntity<ExchangeRate> patchExchangeRate(@PathVariable("codePair") String codePair,
-                                                          @RequestParam BigDecimal rate) {
+    public ResponseEntity<ExchangeRateDto> patchExchangeRate(@PathVariable("codePair") String codePair,
+                                                             @RequestParam BigDecimal rate) {
         return ResponseEntity
                 .ok(exchangeRateService.patchExchangeRate(
                         codePair,
@@ -36,9 +36,11 @@ public class ExchangeRateController {
     }
 
     @PostMapping("/exchangeRates") // создать новый валютный курс
-    public ResponseEntity<ExchangeRate> createExchangeRate(@RequestBody ExchangeRateCreateRequest createRequest) {
+    public ResponseEntity<ExchangeRateDto> createExchangeRate(@RequestParam("baseCurrencyCode") String base,
+                                                              @RequestParam("targetCurrencyCode") String target,
+                                                              @RequestParam BigDecimal rate) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(exchangeRateService.create(createRequest));
+                .body(exchangeRateService.create(base, target, rate));
     }
 }

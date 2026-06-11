@@ -25,28 +25,32 @@ public class ExchangeRateService {
 //    }
 
     @Transactional(readOnly = true)
-    public List<ExchangeRate> getAll() {
-        return exchangeRateRepo.findAll();
+    public List<ExchangeRateDto> getAll() {
+        return exchangeRateRepo.findAll().stream()
+                .map(ExchangeRateDto::from)
+                .toList();
     }
 
     @Transactional
-    public ExchangeRate create(ExchangeRateCreateRequest createRequest) {
-        boolean byCodes = exchangeRateRepo.existsByBaseCurrency_CodeAndTargetCurrency_Code(createRequest.getBaseCurrencyCode(), createRequest.getTargetCurrencyCode());
+    public ExchangeRateDto create(String baseCurrencyCode, String targetCurrencyCode, BigDecimal rate) {
+        boolean byCodes = exchangeRateRepo.existsByBaseCurrency_CodeAndTargetCurrency_Code(baseCurrencyCode, targetCurrencyCode);
         if (byCodes) {
             throw new ExchangeRateAlreadyExistsException();
         }
-        return exchangeRateRepo.save(ExchangeRate.builder()
-                .baseCurrency(currencyService.getByCode(createRequest.getBaseCurrencyCode()))
-                .targetCurrency(currencyService.getByCode(createRequest.getTargetCurrencyCode()))
-                .rate(createRequest.getRate())
+        ExchangeRate exchangeRate = exchangeRateRepo.save(ExchangeRate.builder()
+                .baseCurrency(currencyService.getByCode(baseCurrencyCode))
+                .targetCurrency(currencyService.getByCode(targetCurrencyCode))
+                .rate(rate)
                 .build());
+        return ExchangeRateDto.from(exchangeRate);
     }
 
     @Transactional(readOnly = true)
-    public ExchangeRate getExchangeRateByCodePair(String codePair) {
+    public ExchangeRateDto getExchangeRateByCodePair(String codePair) {
         ValidatedCodePair validated = validateCodePair(codePair);
-        return exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(validated.getFrom(), validated.getTo())
+        ExchangeRate exchangeRate = exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(validated.getFrom(), validated.getTo())
                 .orElseThrow(ExchangeRateNotFoundException::new);
+        return ExchangeRateDto.from(exchangeRate);
     }
 
     @Transactional(readOnly = true)
@@ -66,16 +70,16 @@ public class ExchangeRateService {
     }
 
     @Transactional
-    public ExchangeRate patchExchangeRate(String codePair, BigDecimal rate) {
+    public ExchangeRateDto patchExchangeRate(String codePair, BigDecimal rate) {
         ValidatedCodePair validated = validateCodePair(codePair);
         ExchangeRate byCodes = exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(validated.getFrom(), validated.getTo())
                 .orElseThrow(ExchangeRateNotFoundException::new);
         byCodes.setRate(rate);
-        return byCodes;
+        return ExchangeRateDto.from(byCodes);
     }
 
     private ValidatedCodePair validateCodePair(String codePair) {
-        if ((codePair.length() != 6) || (!codePair.isBlank())) {
+        if ((codePair.length() != 6) || codePair.isBlank()) {
             throw new BadRequestException("Плохой ввод валютной пары");
         }
         String from = codePair.substring(0, 3);
