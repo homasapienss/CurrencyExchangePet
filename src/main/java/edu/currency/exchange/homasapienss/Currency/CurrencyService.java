@@ -14,16 +14,16 @@ import java.util.List;
 public class CurrencyService {
     private final CurrencyRepo currencyRepo;
 
+//    @Transactional(readOnly = true)
+//    public Currency getById(Long id) {
+//        return currencyRepo.findById(id)
+//                .orElseThrow(CurrencyNotFoundException::new);
+//    }
+
     @Transactional(readOnly = true)
     public Currency getByCode(String code) {
         String validatedCode = validateCode(code);
         return currencyRepo.findByCode(validatedCode)
-                .orElseThrow(CurrencyNotFoundException::new);
-    }
-
-    @Transactional(readOnly = true)
-    public Currency getById(Long id) {
-        return currencyRepo.findById(id)
                 .orElseThrow(CurrencyNotFoundException::new);
     }
 
@@ -43,6 +43,11 @@ public class CurrencyService {
                 .name(currencyCreateRequest.getName())
                 .sign(currencyCreateRequest.getSign())
                 .build());
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByCode(String code) {
+        return currencyRepo.existsByCode(code);
     }
 
     private String validateCode(String code) {

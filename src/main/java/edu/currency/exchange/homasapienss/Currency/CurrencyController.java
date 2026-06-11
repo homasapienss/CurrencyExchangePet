@@ -12,18 +12,18 @@ import java.util.List;
 public class CurrencyController {
     private final CurrencyService currencyService;
 
-    @GetMapping("/currencies")
+    @GetMapping("/currencies") // показать все валюты
     public List<Currency> getCurrencies() {
         return currencyService.getAll();
     }
 
-    @GetMapping("/currency/{code}")
+    @GetMapping("/currency/{code}") // показать валюту по коду
     public ResponseEntity<Currency> getCurrencies(@PathVariable("code") String code) {
         return ResponseEntity
                 .ok(currencyService.getByCode(code));
     }
 
-    @PostMapping("/currencies")
+    @PostMapping("/currencies") // добавить новую валюту
     public ResponseEntity<Currency> createCurrency(@RequestBody CurrencyCreateRequest currencyCreateRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -1,4 +1,4 @@
-package edu.currency.exchange.homasapienss;
+package edu.currency.exchange.homasapienss.ExchangeRate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

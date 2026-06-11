@@ -1,7 +1,6 @@
 package edu.currency.exchange.homasapienss.ExchangeRate;
 
 import edu.currency.exchange.homasapienss.Currency.CurrencyService;
-import edu.currency.exchange.homasapienss.ValidatedCodePair;
 import edu.currency.exchange.homasapienss.exception.BadRequestException;
 import edu.currency.exchange.homasapienss.exception.already_exists.ExchangeRateAlreadyExistsException;
 import edu.currency.exchange.homasapienss.exception.not_found.ExchangeRateNotFoundException;
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +47,22 @@ public class ExchangeRateService {
         ValidatedCodePair validated = validateCodePair(codePair);
         return exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(validated.getFrom(), validated.getTo())
                 .orElseThrow(ExchangeRateNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public ExchangeRate getExchangeRateByCodes(String from, String to) {
+        return exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(from, to)
+                .orElseThrow(ExchangeRateNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<ExchangeRate> findExchangeRateByCodes(String from, String to) {
+        return exchangeRateRepo.findByBaseCurrency_CodeAndTargetCurrency_Code(from, to);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsExchangeRateByCodes(String from, String to) {
+        return exchangeRateRepo.existsByBaseCurrency_CodeAndTargetCurrency_Code(from, to);
     }
 
     @Transactional
